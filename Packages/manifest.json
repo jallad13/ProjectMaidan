@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "com.unity.addressables": "2.3.1",
+    "com.unity.localization": "1.5.4",
+    "com.unity.textmeshpro": "3.0.9",
+    "com.unity.ugui": "2.0.0",
+    "com.unity.inputsystem": "1.11.2",
+    "com.unity.ai.navigation": "2.0.8",
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "_comments": {
+    "photon-fusion": "Download Photon Fusion SDK from dashboard.photonengine.com — NOT available via Package Manager. Requires App ID. Import the .unitypackage manually after downloading.",
+    "playfab": "Add PlayFab SDK via Package Manager → Add package from git URL → https://github.com/PlayFab/UnitySDK.git#master",
+    "firebase": "Download Firebase Unity SDK from firebase.google.com/docs/unity/setup. Import FirebaseAnalytics.unitypackage and FirebaseCrashlytics.unitypackage only.",
+    "unity-version": "Use Unity LTS — 6000.0.x (Unity 6 LTS) or latest 2022.3.x LTS at time of project creation. Pin exact version in ProjectSettings/ProjectVersion.txt once chosen."
+  }
+}
