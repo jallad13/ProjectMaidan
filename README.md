@@ -10,11 +10,8 @@
 
 ## Unity Version
 
-Use **Unity 6000.0.x LTS** (Unity 6 LTS) or **Unity 2022.3.x LTS** — whichever is the latest stable LTS at start of development.  
-Once chosen, pin the exact version and document it here:
-
-> **Unity Version:** `[FILL IN]`  
-> **Unity Hub version:** `[FILL IN]`
+This project is pinned to **Unity 6000.3.18f1** (Unity 6.3 LTS).
+Use this exact editor version so package resolution and serialized project settings remain consistent across the team.
 
 ---
 
@@ -35,6 +32,7 @@ Do NOT use "New Project" — that creates a new empty folder. Use "Open" on this
 ## Package Setup (Required on First Open)
 
 The `Packages/manifest.json` includes packages available via Unity Package Manager.  
+**Current prototype status:** Unity Package Manager dependencies are resolved. Photon Fusion, PlayFab, and Firebase remain intentionally unimported until Phase 3, matching the prototype scope below.
 The following require **manual installation** — Package Manager cannot fetch them automatically:
 
 ### 1. Photon Fusion
@@ -44,8 +42,8 @@ The following require **manual installation** — Package Manager cannot fetch t
 - **PROTOTYPE NOTE:** Do NOT enter the App ID yet. Leave config as placeholder. Networking is out of scope for prototype.
 
 ### 2. PlayFab Unity SDK
-- In Unity: **Window → Package Manager → Add package from git URL**
-- URL: `https://github.com/PlayFab/UnitySDK.git#master`
+- Download the official `UnitySDK.unitypackage` from the PlayFab Unity SDK releases: https://github.com/PlayFab/UnitySDK/releases
+- Import it via **Assets → Import Package → Custom Package**
 - **PROTOTYPE NOTE:** Do NOT configure Title ID or Secret Key yet. PlayFab is out of scope for prototype.
 
 ### 3. Firebase Unity SDK
