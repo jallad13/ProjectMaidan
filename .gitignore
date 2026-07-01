@@ -60,3 +60,7 @@ Assets/StreamingAssets/Config/playfab-config.json
 Assets/StreamingAssets/Config/firebase-config.json
 google-services.json
 GoogleService-Info.plist
+
+# Unity Purchasing generated billing configuration
+Assets/Resources/BillingMode.json
+Assets/Resources/BillingMode.json.meta
