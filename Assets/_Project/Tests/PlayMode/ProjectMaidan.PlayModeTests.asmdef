@@ -1,0 +1,19 @@
+{
+  "name": "ProjectMaidan.PlayModeTests",
+  "rootNamespace": "ProjectMaidan.Tests",
+  "references": [
+    "ProjectMaidan.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

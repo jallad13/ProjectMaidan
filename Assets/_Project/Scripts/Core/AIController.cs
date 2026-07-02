@@ -19,6 +19,8 @@ namespace ProjectMaidan.Core
         [Header("Thresholds")]
         [SerializeField] private int _aggressiveDefendThreshold = 15;
 
+        public int AggressiveDefendThreshold => _aggressiveDefendThreshold;
+
         // TODO (MAI-36): Implement decision loop:
         //   1. Check mana availability
         //   2. Read TerritorySystem.OpponentScore vs PlayerScore
