@@ -33,8 +33,5 @@ namespace ProjectMaidan.Units
         public float HealRange = 0f;
         public float HealRate = 0f;
 
-        [Header("Visuals")]
-        public Color TeamColorPlayer = Color.blue;
-        public Color TeamColorOpponent = Color.red;
     }
 }
