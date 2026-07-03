@@ -28,13 +28,10 @@ namespace ProjectMaidan.Units
         [Header("Movement")]
         public float MoveSpeed = 3f;
 
-        [Header("Support (Ranged only)")]
+        [Header("Support")]
         public float HealAmount = 0f;
         public float HealRange = 0f;
         public float HealRate = 0f;
 
-        [Header("Visuals")]
-        public Color TeamColorPlayer = Color.blue;
-        public Color TeamColorOpponent = Color.red;
     }
 }

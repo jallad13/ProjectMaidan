@@ -20,7 +20,7 @@ namespace ProjectMaidan.Units
             if (allUnits == null) return null;
 
             var enemies = allUnits
-                .Where(u => u.IsAlive && u.IsPlayerUnit != isPlayerUnit)
+                .Where(u => u != null && u.IsAlive && u.IsPlayerUnit != isPlayerUnit)
                 .Where(u => Vector3.Distance(origin, u.transform.position) <= range)
                 .ToList();
 
@@ -42,8 +42,17 @@ namespace ProjectMaidan.Units
         public static UnitBase FindLowestHPAlly(bool isPlayerUnit)
         {
             return UnitManager.Instance?.GetAllUnits()
-                .Where(u => u.IsAlive && u.IsPlayerUnit == isPlayerUnit)
+                .Where(u => u != null && u.IsAlive && u.IsPlayerUnit == isPlayerUnit)
+                .Where(u => u.HPPercent < 0.999f)
                 .OrderBy(u => u.HPPercent)
+                .FirstOrDefault();
+        }
+
+        public static UnitBase FindClosestEnemy(Vector3 origin, bool isPlayerUnit)
+        {
+            return UnitManager.Instance?.GetAllUnits()
+                .Where(u => u != null && u.IsAlive && u.IsPlayerUnit != isPlayerUnit)
+                .OrderBy(u => Vector3.Distance(origin, u.transform.position))
                 .FirstOrDefault();
         }
     }
