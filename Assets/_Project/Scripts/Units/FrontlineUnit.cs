@@ -1,21 +1,68 @@
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectMaidan.Units
 {
-    /// <summary>
-    /// Advances to center, engages nearest enemy Frontline, holds at center.
-    /// Target priority: enemy Frontline → Support → Ranged.
-    /// See YouTrack MAI-22.
-    /// </summary>
     public class FrontlineUnit : UnitBase
     {
-        // TODO (MAI-22): Implement behavior:
-        //   1. On spawn: set destination to center zone position
-        //   2. On reaching center: hold position (stop NavMesh)
-        //   3. Each frame: scan for enemies within AttackRange
-        //   4. Enemy found: stop, attack at AttackRate
-        //   5. Target priority: Frontline > Support > Ranged
-        //   6. Attack VFX: line renderer flash to target
-        //   7. All enemies dead: resume advance toward enemy rear
+        private static readonly UnitRole[] TargetPriority =
+        {
+            UnitRole.Frontline,
+            UnitRole.Support,
+            UnitRole.Ranged
+        };
+
+        private const float ScanInterval = 0.1f;
+        private float _nextAttackTime;
+        private bool _hasEngaged;
+
+        protected override void Start()
+        {
+            base.Start();
+            MoveTo(BattlefieldNavigation.CenterHold(IsPlayerUnit));
+            StartCoroutine(BehaviorLoop());
+        }
+
+        private IEnumerator BehaviorLoop()
+        {
+            var wait = new WaitForSeconds(ScanInterval);
+            while (IsAlive)
+            {
+                UnitBase target = UnitAI.FindBestTarget(
+                    transform.position,
+                    AttackRange,
+                    IsPlayerUnit,
+                    TargetPriority);
+
+                if (target != null)
+                {
+                    _hasEngaged = true;
+                    StopMoving();
+                    if (Time.time >= _nextAttackTime)
+                    {
+                        Attack(target, new Color(1f, 0.8f, 0.15f));
+                        _nextAttackTime = Time.time + 1f / Mathf.Max(0.01f, AttackRate);
+                    }
+                }
+                else if (_hasEngaged)
+                {
+                    MoveTo(BattlefieldNavigation.EnemyRear(IsPlayerUnit));
+                }
+                else
+                {
+                    Vector3 center = BattlefieldNavigation.CenterHold(IsPlayerUnit);
+                    if (HasReached(center))
+                    {
+                        StopMoving();
+                    }
+                    else
+                    {
+                        MoveTo(center);
+                    }
+                }
+
+                yield return wait;
+            }
+        }
     }
 }

@@ -1,20 +1,73 @@
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectMaidan.Units
 {
-    /// <summary>
-    /// Holds Rear-Middle position, attacks highest-threat enemy in range.
-    /// Target priority: enemy Ranged → Support → Frontline.
-    /// See YouTrack MAI-24.
-    /// </summary>
     public class RangedUnit : UnitBase
     {
-        // TODO (MAI-24): Implement behavior:
-        //   1. On spawn: move to Rear-Middle position and stop
-        //   2. Each frame: scan enemies within AttackRange (longer than Frontline)
-        //   3. Target priority: Ranged > Support > Frontline
-        //   4. Attack VFX: directional line renderer to target at AttackRate
-        //   5. If enemy reaches within melee range of this unit: retreat while continuing to fire
-        //   6. Does NOT reposition unless directly threatened
+        private static readonly UnitRole[] TargetPriority =
+        {
+            UnitRole.Ranged,
+            UnitRole.Support,
+            UnitRole.Frontline
+        };
+
+        private const float ScanInterval = 0.1f;
+        private const float ThreatDistance = 2.25f;
+        private float _nextAttackTime;
+        private float _retreatUntil;
+
+        protected override void Start()
+        {
+            base.Start();
+            MoveTo(BattlefieldNavigation.RearMiddle(IsPlayerUnit));
+            StartCoroutine(BehaviorLoop());
+        }
+
+        protected override void OnDamaged()
+        {
+            _retreatUntil = Time.time + 2f;
+        }
+
+        private IEnumerator BehaviorLoop()
+        {
+            var wait = new WaitForSeconds(ScanInterval);
+            while (IsAlive)
+            {
+                UnitBase closestEnemy = UnitAI.FindClosestEnemy(transform.position, IsPlayerUnit);
+                bool directlyThreatened = closestEnemy != null &&
+                                          Vector3.Distance(transform.position, closestEnemy.transform.position) <= ThreatDistance;
+
+                if (directlyThreatened || Time.time < _retreatUntil)
+                {
+                    MoveTo(BattlefieldNavigation.Retreat(IsPlayerUnit, transform.position.x));
+                }
+                else
+                {
+                    Vector3 rearMiddle = BattlefieldNavigation.RearMiddle(IsPlayerUnit);
+                    if (HasReached(rearMiddle))
+                    {
+                        StopMoving();
+                    }
+                    else
+                    {
+                        MoveTo(rearMiddle);
+                    }
+                }
+
+                UnitBase target = UnitAI.FindBestTarget(
+                    transform.position,
+                    AttackRange,
+                    IsPlayerUnit,
+                    TargetPriority);
+                if (target != null && Time.time >= _nextAttackTime)
+                {
+                    Attack(target, new Color(0.65f, 0.9f, 1f));
+                    _nextAttackTime = Time.time + 1f / Mathf.Max(0.01f, AttackRate);
+                }
+
+                yield return wait;
+            }
+        }
     }
 }

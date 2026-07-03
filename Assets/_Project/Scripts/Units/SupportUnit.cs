@@ -1,21 +1,62 @@
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectMaidan.Units
 {
-    /// <summary>
-    /// Stays in Rear zone, heals lowest-HP ally every second, retreats if attacked directly.
-    /// Does NOT attack enemies.
-    /// See YouTrack MAI-23.
-    /// </summary>
     public class SupportUnit : UnitBase
     {
-        // TODO (MAI-23): Implement behavior:
-        //   1. On spawn: move to Rear zone position — do NOT advance to center
-        //   2. Coroutine every 1s: scan allied units for lowest HP%
-        //   3. If target within HealRange: apply Heal(HealAmount)
-        //   4. If target outside HealRange: move toward target
-        //   5. Heal VFX: circle pulse on target
-        //   6. If TakeDamage called: retreat to furthest rear NavMesh position
-        //   7. Never set attack target — Role = Support means no combat
+        private const float ScanInterval = 1f;
+        private float _retreatUntil;
+
+        protected override void Start()
+        {
+            base.Start();
+            MoveTo(BattlefieldNavigation.RearAnchor(IsPlayerUnit, transform.position.x));
+            StartCoroutine(SupportLoop());
+        }
+
+        protected override void OnDamaged()
+        {
+            _retreatUntil = Time.time + 2f;
+            MoveTo(BattlefieldNavigation.Retreat(IsPlayerUnit, transform.position.x));
+        }
+
+        private IEnumerator SupportLoop()
+        {
+            var wait = new WaitForSeconds(ScanInterval);
+            while (IsAlive)
+            {
+                if (Time.time < _retreatUntil)
+                {
+                    yield return wait;
+                    continue;
+                }
+
+                UnitBase target = UnitAI.FindLowestHPAlly(IsPlayerUnit);
+                if (target == null)
+                {
+                    MoveTo(BattlefieldNavigation.RearAnchor(IsPlayerUnit, transform.position.x));
+                }
+                else
+                {
+                    float distance = Vector3.Distance(transform.position, target.transform.position);
+                    if (distance <= HealRange)
+                    {
+                        StopMoving();
+                        target.Heal(HealAmount);
+                        target.ShowHealPulse();
+                    }
+                    else
+                    {
+                        float rearDirection = IsPlayerUnit ? -1f : 1f;
+                        Vector3 supportPosition = target.transform.position +
+                                                  Vector3.forward * rearDirection * Mathf.Max(1f, HealRange * 0.7f);
+                        MoveTo(supportPosition);
+                    }
+                }
+
+                yield return wait;
+            }
+        }
     }
 }

@@ -59,10 +59,10 @@ namespace ProjectMaidan.Tests
                 Assert.That(zones[deployment].TryTap(), Is.True);
                 Assert.That(manager.GetUnitCount(true), Is.EqualTo(deployment),
                     "UnitSpawner must leave registration to UnitBase.Start().");
-                yield return null;
-                Assert.That(manager.GetUnitCount(true), Is.EqualTo(deployment + 1));
                 Assert.That(card.IsCoolingDown, Is.True);
                 Assert.That(zones.All(zone => !zone.IsHighlighted), Is.True, "Zones must dehighlight after deployment.");
+                yield return null;
+                Assert.That(manager.GetUnitCount(true), Is.EqualTo(deployment + 1));
                 yield return new WaitForSecondsRealtime(0.35f);
             }
 
