@@ -2,7 +2,8 @@
   "name": "ProjectMaidan.PlayModeTests",
   "rootNamespace": "ProjectMaidan.Tests",
   "references": [
-    "ProjectMaidan.Runtime"
+    "ProjectMaidan.Runtime",
+    "Unity.TextMeshPro"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

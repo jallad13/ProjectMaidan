@@ -1,7 +1,9 @@
 {
   "name": "ProjectMaidan.Runtime",
   "rootNamespace": "ProjectMaidan",
-  "references": [],
+  "references": [
+    "Unity.TextMeshPro"
+  ],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
