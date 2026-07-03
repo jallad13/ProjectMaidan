@@ -6,7 +6,6 @@ namespace ProjectMaidan.Units
 {
     /// <summary>
     /// Registry of all active units on the battlefield.
-    /// Units register on Start() and unregister on Die().
     /// </summary>
     public class UnitManager : MonoBehaviour
     {
@@ -18,16 +17,36 @@ namespace ProjectMaidan.Units
 
         private void Awake()
         {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             Instance = this;
         }
 
-        public void Register(UnitBase unit) => _activeUnits.Add(unit);
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        public void Register(UnitBase unit)
+        {
+            if (unit != null && !_activeUnits.Contains(unit))
+            {
+                _activeUnits.Add(unit);
+            }
+        }
+
         public void Unregister(UnitBase unit) => _activeUnits.Remove(unit);
 
         public IReadOnlyList<UnitBase> GetAllUnits() => _activeUnits;
 
-        public int GetUnitCount(bool isPlayer) => _activeUnits.Count(u => u.IsPlayerUnit == isPlayer);
+        public int GetUnitCount(bool isPlayer) => _activeUnits.Count(unit => unit != null && unit.IsPlayerUnit == isPlayer);
         public bool CanDeploy(bool isPlayer) => GetUnitCount(isPlayer) < MaxUnitsPerSide;
     }
 }
