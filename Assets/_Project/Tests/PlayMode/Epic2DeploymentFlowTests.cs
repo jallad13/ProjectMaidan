@@ -57,6 +57,9 @@ namespace ProjectMaidan.Tests
                 Assert.That(controller.SelectedCard, Is.SameAs(card));
                 Assert.That(zones.All(zone => zone.IsHighlighted), Is.True, "Selecting a card must highlight all player zones.");
                 Assert.That(zones[deployment].TryTap(), Is.True);
+                Assert.That(manager.GetUnitCount(true), Is.EqualTo(deployment),
+                    "UnitSpawner must leave registration to UnitBase.Start().");
+                yield return null;
                 Assert.That(manager.GetUnitCount(true), Is.EqualTo(deployment + 1));
                 Assert.That(card.IsCoolingDown, Is.True);
                 Assert.That(zones.All(zone => !zone.IsHighlighted), Is.True, "Zones must dehighlight after deployment.");

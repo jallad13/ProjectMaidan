@@ -27,7 +27,7 @@ namespace ProjectMaidan.Units
             {
                 elapsed += Time.deltaTime;
                 float progress = Mathf.Clamp01(elapsed / _duration);
-                transform.localScale = Vector3.LerpUnclamped(Vector3.zero, _targetScale, progress);
+                transform.localScale = Vector3.Lerp(Vector3.zero, _targetScale, progress);
                 yield return null;
             }
 

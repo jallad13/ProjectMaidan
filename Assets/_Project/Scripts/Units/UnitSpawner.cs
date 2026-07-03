@@ -36,7 +36,6 @@ namespace ProjectMaidan.Units
                 bodyRenderer.material.color = isPlayerUnit ? _playerColor : _opponentColor;
             }
 
-            UnitManager.Instance?.Register(unit);
             return unit;
         }
     }
