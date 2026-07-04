@@ -27,11 +27,13 @@ namespace ProjectMaidan.Core
         [Header("Debug — read-only")]
         [SerializeField] private bool _comebackActive;
         [SerializeField] private float _regenAccumulator;
+        [SerializeField] private bool _regenEnabled = true;
 
         public bool IsPlayerMana => _isPlayerMana;
         public int CurrentMana { get; private set; }
         public int MaxMana => _config != null ? Mathf.Max(1, _config.MaxMana) : 0;
         public bool IsComebackActive => _comebackActive;
+        public bool IsRegenEnabled => _regenEnabled;
         public float CurrentRegenRate => _config != null
             ? Mathf.Max(0.01f, _comebackActive ? _config.ComebackRegenRate : _config.ManaRegenRate)
             : 0f;
@@ -67,7 +69,7 @@ namespace ProjectMaidan.Core
 
         private void Update()
         {
-            if (_config == null || CurrentMana >= MaxMana)
+            if (!_regenEnabled || _config == null || CurrentMana >= MaxMana)
             {
                 return;
             }
@@ -128,6 +130,11 @@ namespace ProjectMaidan.Core
         public void Configure(MatchConfig config)
         {
             _config = config;
+        }
+
+        public void SetRegenEnabled(bool enabled)
+        {
+            _regenEnabled = enabled;
         }
 
         public void ResetMana()

@@ -206,6 +206,12 @@ namespace ProjectMaidan.Tests
             }
 
             yield return null;
+            MatchManager manager = MatchManager.Instance;
+            if (sceneName == "Match" && manager != null && manager.CurrentState == MatchState.PreMatch)
+            {
+                Assert.That(manager.TransitionTo(MatchState.InMatch), Is.True);
+                yield return null;
+            }
         }
     }
 }
