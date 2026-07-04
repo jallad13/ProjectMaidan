@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using ProjectMaidan.Units;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -21,10 +22,10 @@ namespace ProjectMaidan.UI
         [Header("UI")]
         [SerializeField] private Button _button;
         [SerializeField] private Image _background;
-        [SerializeField] private Text _nameText;
-        [SerializeField] private Text _roleText;
-        [SerializeField] private Text _manaText;
-        [SerializeField] private Text _cooldownText;
+        [SerializeField] private TMP_Text _nameText;
+        [SerializeField] private TMP_Text _roleText;
+        [SerializeField] private TMP_Text _manaText;
+        [SerializeField] private TMP_Text _cooldownText;
 
         [Header("Placeholder Colors")]
         [SerializeField] private Color _availableColor = new(0.16f, 0.25f, 0.42f, 1f);

@@ -27,8 +27,19 @@ namespace ProjectMaidan.Core
         [SerializeField] private Renderer _highlight;
 
         private bool _isHighlighted;
+        private bool _interactionEnabled = true;
 
         public bool IsHighlighted => _isHighlighted;
+        public bool IsInteractionEnabled => _interactionEnabled;
+
+        public void SetInteractionEnabled(bool enabled)
+        {
+            _interactionEnabled = enabled;
+            if (!enabled)
+            {
+                SetHighlight(false);
+            }
+        }
 
         public void SetHighlight(bool active)
         {
@@ -49,7 +60,7 @@ namespace ProjectMaidan.Core
 
         public bool TryTap()
         {
-            if (!_isHighlighted || !IsPlayerZone)
+            if (!_interactionEnabled || !_isHighlighted || !IsPlayerZone)
             {
                 return false;
             }

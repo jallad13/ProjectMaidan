@@ -21,6 +21,8 @@ namespace ProjectMaidan.Core
 
         public int AggressiveDefendThreshold => _aggressiveDefendThreshold;
 
+        private Coroutine _decisionLoopRoutine;
+
         // TODO (MAI-36): Implement decision loop:
         //   1. Check mana availability
         //   2. Read TerritorySystem.OpponentScore vs PlayerScore
@@ -30,6 +32,20 @@ namespace ProjectMaidan.Core
         //   6. 20% random: pick random zone instead
         //   7. Apply 0.5–1.5s random delay per cycle
         //   8. Respect MaxUnitsPerSide limit
+
+        private void OnEnable()
+        {
+            _decisionLoopRoutine ??= StartCoroutine(DecisionLoop());
+        }
+
+        private void OnDisable()
+        {
+            if (_decisionLoopRoutine != null)
+            {
+                StopCoroutine(_decisionLoopRoutine);
+                _decisionLoopRoutine = null;
+            }
+        }
 
         private IEnumerator DecisionLoop()
         {

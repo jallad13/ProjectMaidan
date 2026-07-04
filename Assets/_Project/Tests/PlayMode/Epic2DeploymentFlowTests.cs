@@ -24,6 +24,11 @@ namespace ProjectMaidan.Tests
             }
             yield return null;
 
+            MatchManager matchManager = MatchManager.Instance;
+            Assert.That(matchManager, Is.Not.Null);
+            Assert.That(matchManager.TransitionTo(MatchState.InMatch), Is.True);
+            yield return null;
+
             DeploymentController controller = Object.FindFirstObjectByType<DeploymentController>();
             ManaSystem manaSystem = ManaSystem.Instance;
             UnitManager manager = UnitManager.Instance;

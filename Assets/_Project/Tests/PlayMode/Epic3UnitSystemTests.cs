@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using NUnit.Framework;
+using ProjectMaidan.Core;
 using ProjectMaidan.Units;
 using UnityEngine;
 using UnityEngine.AI;
@@ -144,6 +145,12 @@ namespace ProjectMaidan.Tests
             }
 
             yield return null;
+            MatchManager manager = MatchManager.Instance;
+            if (manager != null && manager.CurrentState == MatchState.PreMatch)
+            {
+                Assert.That(manager.TransitionTo(MatchState.InMatch), Is.True);
+                yield return null;
+            }
         }
     }
 }

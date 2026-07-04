@@ -152,6 +152,9 @@ namespace ProjectMaidan.Tests
             zone.RegisterUnit(player);
             system.EvaluateTick();
             Assert.That(line.IsFlashing, Is.False);
+            yield return null;
+            Assert.That(hud.PlayerScoreScale.x, Is.GreaterThan(1f));
+            Assert.That(hud.OpponentScoreScale.x, Is.EqualTo(1f).Within(0.01f));
 
             zone.UnregisterUnit(player);
             zone.RegisterUnit(opponent);
@@ -159,6 +162,8 @@ namespace ProjectMaidan.Tests
             system.EvaluateTick();
 
             Assert.That(line.IsFlashing, Is.True);
+            yield return null;
+            Assert.That(hud.OpponentScoreScale.x, Is.GreaterThan(1f));
             Assert.That(hud.OpponentScoreText, Is.EqualTo("2 / 120"));
             Assert.That(hud.OpponentStyle, Is.EqualTo(FontStyles.Bold));
             Assert.That(hud.PlayerStyle, Is.EqualTo(FontStyles.Normal));
@@ -189,6 +194,12 @@ namespace ProjectMaidan.Tests
             }
 
             yield return null;
+            MatchManager manager = MatchManager.Instance;
+            if (manager != null && manager.CurrentState == MatchState.PreMatch)
+            {
+                Assert.That(manager.TransitionTo(MatchState.InMatch), Is.True);
+                yield return null;
+            }
         }
     }
 }
