@@ -10,15 +10,15 @@ namespace ProjectMaidan.Units
         [SerializeField] private Color _playerColor = new(0.1f, 0.45f, 1f, 1f);
         [SerializeField] private Color _opponentColor = new(0.9f, 0.15f, 0.15f, 1f);
 
+        public int GetManaCost(UnitRole role)
+        {
+            UnitBase prefab = GetPrefab(role);
+            return prefab != null ? prefab.ManaCost : int.MaxValue;
+        }
+
         public UnitBase Spawn(UnitRole role, bool isPlayerUnit, Vector3 zoneCenter)
         {
-            UnitBase prefab = role switch
-            {
-                UnitRole.Frontline => _frontlinePrefab,
-                UnitRole.Support => _supportPrefab,
-                UnitRole.Ranged => _rangedPrefab,
-                _ => null
-            };
+            UnitBase prefab = GetPrefab(role);
 
             if (prefab == null)
             {
@@ -37,6 +37,17 @@ namespace ProjectMaidan.Units
             }
 
             return unit;
+        }
+
+        private UnitBase GetPrefab(UnitRole role)
+        {
+            return role switch
+            {
+                UnitRole.Frontline => _frontlinePrefab,
+                UnitRole.Support => _supportPrefab,
+                UnitRole.Ranged => _rangedPrefab,
+                _ => null
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectMaidan.Core
 {
@@ -19,6 +20,14 @@ namespace ProjectMaidan.Core
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void Start()
+        {
+            if (SceneManager.GetActiveScene().name == "Bootstrap")
+            {
+                SceneManager.LoadScene("MainMenu");
+            }
         }
     }
 }

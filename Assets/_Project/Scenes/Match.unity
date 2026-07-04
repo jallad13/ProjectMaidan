@@ -461,6 +461,16 @@ MonoBehaviour:
   _minDelay: 0.5
   _maxDelay: 1.5
   _aggressiveDefendThreshold: 15
+  _randomOverrideChance: 0.2
+  _unitSpawner: {fileID: 493092707}
+  _opponentZones:
+  - {fileID: 2108791096}
+  - {fileID: 1772780871}
+  - {fileID: 1242428255}
+  - {fileID: 1687246807}
+  - {fileID: 1234769747}
+  - {fileID: 188494329}
+  _territorySystem: {fileID: 493092710}
 --- !u!4 &164423067
 Transform:
   m_ObjectHideFlags: 0
