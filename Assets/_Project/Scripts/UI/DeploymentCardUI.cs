@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using ProjectMaidan.Units;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ProjectMaidan.UI
 {
-    public class DeploymentCardUI : MonoBehaviour
+    public class DeploymentCardUI : MonoBehaviour, IPointerClickHandler
     {
         public static event Action<DeploymentCardUI> OnCardTapped;
+        public static event Action<DeploymentCardUI> OnUnaffordableCardTapped;
 
         [Header("Unit")]
         [SerializeField] private string _unitName;
@@ -40,6 +42,7 @@ namespace ProjectMaidan.UI
         public int ManaCost => _manaCost;
         public bool IsSelected => _isSelected;
         public bool IsCoolingDown => _isCoolingDown;
+        public bool IsAffordable => _isAffordable;
         public bool IsAvailable => !_isCoolingDown && _isAffordable;
 
         private void Awake()
@@ -64,9 +67,23 @@ namespace ProjectMaidan.UI
 
         public void HandleTap()
         {
+            if (!_isAffordable)
+            {
+                OnUnaffordableCardTapped?.Invoke(this);
+                return;
+            }
+
             if (IsAvailable)
             {
                 OnCardTapped?.Invoke(this);
+            }
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!_isAffordable && !_isCoolingDown)
+            {
+                OnUnaffordableCardTapped?.Invoke(this);
             }
         }
 
