@@ -1,19 +1,18 @@
 using System.Collections;
 using ProjectMaidan.UI;
 using ProjectMaidan.Units;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ProjectMaidan.Core
 {
     public class DeploymentController : MonoBehaviour
     {
         [Header("Prototype Flow")]
-        [SerializeField] private int _startingMana = 10;
         [SerializeField] private DeploymentZone[] _playerZones;
         [SerializeField] private DeploymentCardUI[] _cards;
         [SerializeField] private UnitSpawner _unitSpawner;
-        [SerializeField] private Text _statusText;
+        [SerializeField] private TMP_Text _statusText;
 
         private DeploymentCardUI _selectedCard;
         private Coroutine _statusRoutine;
@@ -23,18 +22,17 @@ namespace ProjectMaidan.Core
         private void OnEnable()
         {
             DeploymentCardUI.OnCardTapped += HandleCardTapped;
+            DeploymentCardUI.OnUnaffordableCardTapped += HandleUnaffordableCardTapped;
             DeploymentZone.OnZoneTapped += HandleZoneTapped;
+            ManaSystem.OnManaChanged += HandleManaChanged;
         }
 
         private void Start()
         {
-            foreach (DeploymentCardUI card in _cards)
-            {
-                if (card != null)
-                {
-                    card.SetAffordable(card.ManaCost <= _startingMana);
-                }
-            }
+            ManaSystem manaSystem = ManaSystem.Instance;
+            HandleManaChanged(
+                manaSystem != null ? manaSystem.CurrentMana : 0,
+                manaSystem != null ? manaSystem.MaxMana : 0);
 
             SetZoneHighlights(false);
             if (_statusText != null)
@@ -46,7 +44,9 @@ namespace ProjectMaidan.Core
         private void OnDisable()
         {
             DeploymentCardUI.OnCardTapped -= HandleCardTapped;
+            DeploymentCardUI.OnUnaffordableCardTapped -= HandleUnaffordableCardTapped;
             DeploymentZone.OnZoneTapped -= HandleZoneTapped;
+            ManaSystem.OnManaChanged -= HandleManaChanged;
         }
 
         private void HandleCardTapped(DeploymentCardUI card)
@@ -80,21 +80,58 @@ namespace ProjectMaidan.Core
                 return;
             }
 
+            DeploymentCardUI selectedCard = _selectedCard;
+            ManaSystem manaSystem = ManaSystem.Instance;
+            if (manaSystem == null || !manaSystem.TryDeductMana(selectedCard.ManaCost))
+            {
+                ShowStatus("Not enough mana", 1.5f);
+                return;
+            }
+
             UnitBase spawnedUnit = _unitSpawner != null
-                ? _unitSpawner.Spawn(_selectedCard.Role, true, zone.transform.position)
+                ? _unitSpawner.Spawn(selectedCard.Role, true, zone.transform.position)
                 : null;
 
             if (spawnedUnit == null)
             {
+                manaSystem.AddMana(selectedCard.ManaCost);
                 ShowStatus("Unable to deploy unit", 2f);
                 return;
             }
 
-            DeploymentCardUI usedCard = _selectedCard;
             _selectedCard = null;
-            usedCard.SetSelected(false);
-            usedCard.StartCooldown();
+            selectedCard.SetSelected(false);
+            selectedCard.StartCooldown();
             SetZoneHighlights(false);
+        }
+
+        private void HandleUnaffordableCardTapped(DeploymentCardUI card)
+        {
+            if (card != null)
+            {
+                ShowStatus("Not enough mana", 1.5f);
+            }
+        }
+
+        private void HandleManaChanged(int currentMana, int maxMana)
+        {
+            bool selectedCardBecameUnaffordable = false;
+            foreach (DeploymentCardUI card in _cards)
+            {
+                if (card == null)
+                {
+                    continue;
+                }
+
+                bool affordable = card.ManaCost <= currentMana;
+                card.SetAffordable(affordable);
+                selectedCardBecameUnaffordable |= card == _selectedCard && !affordable;
+            }
+
+            if (selectedCardBecameUnaffordable)
+            {
+                ClearSelection();
+            }
         }
 
         private void ClearSelection()

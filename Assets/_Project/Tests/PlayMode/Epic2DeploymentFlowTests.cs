@@ -5,10 +5,10 @@ using NUnit.Framework;
 using ProjectMaidan.Core;
 using ProjectMaidan.UI;
 using ProjectMaidan.Units;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace ProjectMaidan.Tests
 {
@@ -25,6 +25,7 @@ namespace ProjectMaidan.Tests
             yield return null;
 
             DeploymentController controller = Object.FindFirstObjectByType<DeploymentController>();
+            ManaSystem manaSystem = ManaSystem.Instance;
             UnitManager manager = UnitManager.Instance;
             UnitSpawner spawner = Object.FindFirstObjectByType<UnitSpawner>();
             DeploymentCardUI card = Object.FindObjectsByType<DeploymentCardUI>(FindObjectsSortMode.None)
@@ -33,9 +34,10 @@ namespace ProjectMaidan.Tests
                 .Where(zone => zone.IsPlayerZone)
                 .OrderBy(zone => zone.ZoneId)
                 .ToArray();
-            Text status = GameObject.Find("StatusMessage").GetComponent<Text>();
+            TMP_Text status = GameObject.Find("StatusMessage").GetComponent<TMP_Text>();
 
             Assert.That(controller, Is.Not.Null);
+            Assert.That(manaSystem, Is.Not.Null);
             Assert.That(manager, Is.Not.Null);
             Assert.That(spawner, Is.Not.Null);
             Assert.That(zones, Has.Length.EqualTo(6));
@@ -46,6 +48,11 @@ namespace ProjectMaidan.Tests
 
             for (int deployment = 0; deployment < UnitManager.MaxUnitsPerSide; deployment++)
             {
+                if (!manaSystem.CanAfford(card.ManaCost))
+                {
+                    manaSystem.AddMana(manaSystem.MaxMana);
+                }
+
                 float timeout = Time.realtimeSinceStartup + 1f;
                 while (!card.IsAvailable && Time.realtimeSinceStartup < timeout)
                 {
@@ -72,6 +79,11 @@ namespace ProjectMaidan.Tests
             Assert.That(firstUnit.GetComponentInChildren<TextMesh>().text, Is.EqualTo("F"));
 
             float fifthTimeout = Time.realtimeSinceStartup + 1f;
+            if (!manaSystem.CanAfford(card.ManaCost))
+            {
+                manaSystem.AddMana(manaSystem.MaxMana);
+            }
+
             while (!card.IsAvailable && Time.realtimeSinceStartup < fifthTimeout)
             {
                 yield return null;
